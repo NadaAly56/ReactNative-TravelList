@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -5,8 +6,9 @@
  * @format
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import type {PropsWithChildren} from 'react';
+import myStyles from './styles/style';
 import {
   SafeAreaView,
   ScrollView,
@@ -24,6 +26,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Logo from './components/logo';
+import Form from './components/form';
+import PackingList from './components/packingList';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -56,41 +61,33 @@ function Section({children, title}: SectionProps): JSX.Element {
 }
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [items, setItems] = useState<any>([])
+  const [isOpen, setIsOpen] = useState(false)
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const handleAddItems = (newItem:any)=>{
+    setItems((item:any)=> [...item, newItem])
+  }
 
+  const handleDeleteItem = (itemId:any)=>{ 
+    setItems((items:any) => items.filter((item:any)=> item.id !== itemId))
+  }
+
+  const handlePackedItem = (itemId:any) => {
+    setItems((items:any)=> items.map((item:any)=> item.id === itemId ?
+       {...item, packed: !item.packed}: item))
+  }
+
+  const handleClearList = ()=> {
+     setIsOpen(true)
+    // if(isOpen) setItems([])
+  }
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
+    <SafeAreaView>
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+        contentInsetAdjustmentBehavior="automatic">
+        <Logo />
+        <Form onAddItem={handleAddItems} />
+        <PackingList items={items} onDeleteItem={handleDeleteItem} onPackedItem={handlePackedItem} onClearList={handleClearList} />
       </ScrollView>
     </SafeAreaView>
   );
